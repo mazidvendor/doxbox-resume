@@ -1,6 +1,4 @@
-# In this Docker Compose example, it assumes that you maintain a reverse proxy externally (or chose not to).
-# The only two exposed ports here are from minio (:9000) and the app itself (:3000).
-# If these ports are changed, ensure that the env vars passed to the app are also changed accordingly.
+version: '3.8'
 
 services:
   # Database (Postgres)
@@ -19,7 +17,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Storage (for image uploads)
+  # Storage (Minio)
   minio:
     image: minio/minio:latest
     restart: unless-stopped
@@ -32,7 +30,7 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
 
-  # Chrome Browser (for printing and previews)
+  # Chrome (Browserless)
   chrome:
     image: ghcr.io/browserless/chromium:latest
     restart: unless-stopped
@@ -45,8 +43,11 @@ services:
       PROXY_PORT: 3000
       PROXY_SSL: "false"
 
+  # App (Local build)
   app:
-    image: amruthpillai/reactive-resume:latest
+    build:
+      context: .           # Root of your project
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -55,67 +56,30 @@ services:
       - minio
       - chrome
     environment:
-      # -- Environment Variables --
       PORT: 3000
       NODE_ENV: production
 
-      # -- URLs --
       PUBLIC_URL: http://localhost:3000
       STORAGE_URL: http://localhost:9000/default
 
-      # -- Printer (Chrome) --
       CHROME_TOKEN: chrome_token
       CHROME_URL: ws://chrome:3000
 
-      # -- Database (Postgres) --
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
 
-      # -- Auth --
-      ACCESS_TOKEN_SECRET: access_token_secret
-      REFRESH_TOKEN_SECRET: refresh_token_secret
+      ACCESS_TOKEN_SECRET: e53cc6f4999c081f7b6685c0b3c7962c
+      REFRESH_TOKEN_SECRET: 3e31ef1f89bd350019b7731019242fd5
 
-      # -- Emails --
       MAIL_FROM: noreply@localhost
-      # SMTP_URL: smtp://user:pass@smtp:587 # Optional
 
-      # -- Storage (Minio) --
       STORAGE_ENDPOINT: minio
       STORAGE_PORT: 9000
-      STORAGE_REGION: us-east-1 # Optional
+      STORAGE_REGION: us-east-1
       STORAGE_BUCKET: default
       STORAGE_ACCESS_KEY: minioadmin
       STORAGE_SECRET_KEY: minioadmin
       STORAGE_USE_SSL: "false"
       STORAGE_SKIP_BUCKET_CHECK: "false"
-
-      # -- Crowdin (Optional) --
-      # CROWDIN_PROJECT_ID:
-      # CROWDIN_PERSONAL_TOKEN:
-
-      # -- Email (Optional) --
-      # DISABLE_SIGNUPS: "false"
-      # DISABLE_EMAIL_AUTH: "false"
-
-      # -- GitHub (Optional) --
-      # GITHUB_CLIENT_ID: github_client_id
-      # GITHUB_CLIENT_SECRET: github_client_secret
-      # GITHUB_CALLBACK_URL: http://localhost:3000/api/auth/github/callback
-
-      # -- Google (Optional) --
-      # GOOGLE_CLIENT_ID: google_client_id
-      # GOOGLE_CLIENT_SECRET: google_client_secret
-      # GOOGLE_CALLBACK_URL: http://localhost:3000/api/auth/google/callback
-
-      # -- OpenID (Optional) --
-      # VITE_OPENID_NAME: OpenID
-      # OPENID_AUTHORIZATION_URL:
-      # OPENID_CALLBACK_URL: http://localhost:3000/api/auth/openid/callback
-      # OPENID_CLIENT_ID:
-      # OPENID_CLIENT_SECRET:
-      # OPENID_ISSUER:
-      # OPENID_SCOPE: openid profile email
-      # OPENID_TOKEN_URL:
-      # OPENID_USER_INFO_URL:
 
 volumes:
   minio_data:
