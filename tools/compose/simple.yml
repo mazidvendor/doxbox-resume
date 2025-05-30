@@ -59,8 +59,8 @@ services:
       PORT: 3000
       NODE_ENV: production
 
-      PUBLIC_URL: http://localhost:3000
-      STORAGE_URL: http://localhost:9000/default
+      PUBLIC_URL: http://104.251.211.81:3000
+      STORAGE_URL: http://104.251.211.81:9000/default
 
       CHROME_TOKEN: chrome_token
       CHROME_URL: ws://chrome:3000
