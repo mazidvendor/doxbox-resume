@@ -11,6 +11,7 @@ import { Icon } from "@/client/components/icon";
 import { UserAvatar } from "@/client/components/user-avatar";
 import { UserOptions } from "@/client/components/user-options";
 import { useUser } from "@/client/services/user";
+import { Logo } from "@/client/components/logo";
 
 type Props = {
   className?: string;
@@ -98,11 +99,10 @@ export const Sidebar = ({ setOpen }: SidebarProps) => {
   return (
     <div className="flex h-full flex-col gap-y-4">
       <div className="ml-12 flex justify-center lg:ml-0">
-        <Button asChild size="icon" variant="ghost" className="size-10 p-0">
-          <Link to="/">
-            <Icon size={24} className="mx-auto hidden lg:block" />
+      <Link to="/">
+          <Logo size={100} />
+            {/* <Icon size={24} className="mx-auto hidden lg:block" /> */}
           </Link>
-        </Button>
       </div>
 
       <Separator className="opacity-50" />

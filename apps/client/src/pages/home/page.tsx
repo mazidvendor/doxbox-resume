@@ -21,13 +21,13 @@ export const HomePage = () => {
         <html lang={i18n.locale} />
 
         <title>
-          {t`Reactive Resume`} - {t`A free and open-source resume builder`}
+          {t`Craft Your Profile`}
         </title>
 
-        <meta
+        {/* <meta
           name="description"
           content="A free and open-source resume builder that simplifies the process of creating, updating, and sharing your resume."
-        />
+        /> */}
       </Helmet>
 
       <HeroSection />
