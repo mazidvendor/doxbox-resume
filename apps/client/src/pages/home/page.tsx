@@ -21,7 +21,7 @@ export const HomePage = () => {
         <html lang={i18n.locale} />
 
         <title>
-          {t`Craft Your Profile`}
+        Craft Your Profile
         </title>
 
         {/* <meta
