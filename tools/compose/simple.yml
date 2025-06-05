@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "80:3000"
     depends_on:
       - postgres
       - minio
@@ -59,8 +59,8 @@ services:
       PORT: 3000
       NODE_ENV: production
 
-      PUBLIC_URL: http://104.251.211.81:3000
-      STORAGE_URL: http://104.251.211.81:9000/default
+      PUBLIC_URL: http://185.7.81.42
+      STORAGE_URL: http://185.7.81.42:9000/default
 
       CHROME_TOKEN: chrome_token
       CHROME_URL: ws://chrome:3000
