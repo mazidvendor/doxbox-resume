@@ -60,7 +60,7 @@ services:
       NODE_ENV: production
 
       PUBLIC_URL: https://www.craftyourprofile.com
-      STORAGE_URL: http://185.7.81.42:9000/default
+      STORAGE_URL: https://www.craftyourprofile.com/default
 
       CHROME_TOKEN: chrome_token
       CHROME_URL: ws://chrome:3000
