@@ -48,9 +48,9 @@ export class GitHubStrategy extends PassportStrategy(Strategy, "github") {
           picture,
           locale: "en-US",
           provider: "github",
-          name: displayName || createId(),
+          fname: displayName || createId(),
           emailVerified: true, // auto-verify emails
-          username: processUsername(username ?? email.split("@")[0]),
+          username: processUsername(email),//username ?? email.split("@")[0]
           secrets: { create: {} },
         });
 

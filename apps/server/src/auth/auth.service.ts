@@ -103,9 +103,11 @@ export class AuthService {
 
     try {
       const user = await this.userService.create({
-        name: registerDto.name,
+        fname: registerDto.fname,
+        mname: registerDto.mname,
+        lname: registerDto.lname,
         email: registerDto.email,
-        username: registerDto.username,
+        username: registerDto.email, //registerDto.username,
         locale: registerDto.locale,
         provider: "email",
         emailVerified: false, // Set to true if you don't want to verify user's email

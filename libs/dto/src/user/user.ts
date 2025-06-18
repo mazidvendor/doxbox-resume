@@ -16,7 +16,19 @@ export const usernameSchema = z
 
 export const userSchema = z.object({
   id: idSchema,
-  name: z.string().min(1).max(255),
+  // name: z.string().min(1).max(255),
+  fname: z.string().min(1).max(255),
+  mname: z.literal("").or(z.string().min(1).max(255)),
+  lname: z.literal("").or(z.string().min(1).max(255)),
+  gender: z.literal("").or(z.string().min(1).max(255)),
+  dob: z.literal("").or(z.string().min(1).max(255)),
+  nationality: z.literal("").or(z.string().min(1).max(255)),
+  countryresidence: z.literal("").or(z.string().min(1).max(255)),
+  cityresidence: z.literal("").or(z.string().min(1).max(255)),
+  residentaladdress: z.literal("").or(z.string().min(1).max(255)),
+
+  
+
   picture: z.literal("").or(z.null()).or(z.string().url()),
   username: usernameSchema,
   email: z

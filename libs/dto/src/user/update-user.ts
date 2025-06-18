@@ -3,7 +3,7 @@ import { createZodDto } from "nestjs-zod/dto";
 import { userSchema } from "./user";
 
 export const updateUserSchema = userSchema.partial().pick({
-  name: true,
+  fname: true,
   locale: true,
   username: true,
   email: true,

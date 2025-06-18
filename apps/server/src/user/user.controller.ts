@@ -52,9 +52,9 @@ export class UserController {
       }
 
       return await this.userService.updateByEmail(email, {
-        name: updateUserDto.name,
+        fname: updateUserDto.fname,
         picture: updateUserDto.picture,
-        username: updateUserDto.username,
+        username: updateUserDto.email,
         locale: updateUserDto.locale,
       });
     } catch (error) {

@@ -39,8 +39,15 @@ export const RegisterPage = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      username: "",
+      fname: "",
+      mname: "",
+      lname: "",
+      gender: "",
+      dob: "",
+      nationality: "",
+      countryresidence: "",
+      cityresidence: "",
+      residentaladdress: "",
       email: "",
       password: "",
       locale: "en-US",
@@ -91,17 +98,57 @@ export const RegisterPage = () => {
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <FormField
-              name="name"
+              name="fname"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t`Name`}</FormLabel>
+                  <FormLabel>{t`First name`}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder={t({
                         message: "John Doe",
                         context:
-                          "Localized version of a placeholder name. For example, Max Mustermann in German or Jan Kowalski in Polish.",
+                          "Localized version of a placeholder fname. For example, Max Mustermann in German or Jan Kowalski in Polish.",
+                      })}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              name="mname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t`Middle Name`}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t({
+                        message: "John Doe",
+                        context:
+                          "Localized version of a placeholder middle name. For example, Max Mustermann in German or Jan Kowalski in Polish.",
+                      })}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              name="lname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t`Last Name`}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t({
+                        message: "John Doe",
+                        context:
+                          "Localized version of a placeholder Last Name. For example, Max Mustermann in German or Jan Kowalski in Polish.",
                       })}
                       {...field}
                     />
@@ -111,27 +158,7 @@ export const RegisterPage = () => {
               )}
             />
 
-            <FormField
-              name="username"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t`Username`}</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="lowercase"
-                      placeholder={t({
-                        message: "john.doe",
-                        context:
-                          "Localized version of a placeholder username. For example, max.mustermann in German or jan.kowalski in Polish.",
-                      })}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
 
             <FormField
               name="email"
