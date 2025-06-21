@@ -136,13 +136,20 @@ export class AuthService {
 
   async authenticate({ identifier, password }: LoginDto) {
     try {
+      const doxboxuser = await this.doxboxService.loginUser(identifier,password);
+      if(!doxboxuser?.data?.id){
+        throw new BadRequestException(doxboxuser?.message);
+      }
       const user = await this.userService.findOneByIdentifierOrThrow(identifier);
 
-      if (!user.secrets?.password) {
-        throw new BadRequestException(ErrorMessage.OAuthUser);
+      if(doxboxuser.data.id!=user.globalUserId){
+        throw new BadRequestException("User not exist in this tenant.");
       }
+      // if (!user.secrets?.password) {
+      //   throw new BadRequestException(ErrorMessage.OAuthUser);
+      // }
 
-      await this.validatePassword(password, user.secrets.password);
+      // await this.validatePassword(password, user.secrets.password);
       await this.setLastSignedIn(user.email);
 
       return user;
