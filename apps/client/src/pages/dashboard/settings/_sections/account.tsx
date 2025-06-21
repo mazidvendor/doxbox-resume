@@ -23,7 +23,7 @@ import {
 } from "@reactive-resume/ui";
 import { cn } from "@reactive-resume/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { UserAvatar } from "@/client/components/user-avatar";
@@ -32,6 +32,7 @@ import { useResendVerificationEmail } from "@/client/services/auth";
 import { useUploadImage } from "@/client/services/storage";
 import { useUpdateUser, useUser } from "@/client/services/user";
 import { Select } from "@radix-ui/react-select";
+import { axios } from "@/client/libs/axios";
 
 export const AccountSettings = () => {
   const { user } = useUser();
@@ -41,6 +42,26 @@ export const AccountSettings = () => {
   const { resendVerificationEmail } = useResendVerificationEmail();
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+
+
+  const [countries, setCountries] = useState<any>([]);
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get<any>(
+        '/doxbox/country-list'
+      );
+      setCountries(response.data?.data??[]);
+    } catch (error) {
+      console.error('Failed to fetch country list:', error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
 
   const form = useForm<UpdateUserDto>({
     resolver: zodResolver(updateUserSchema),
@@ -319,15 +340,14 @@ export const AccountSettings = () => {
               <FormItem>
                 <FormLabel>Nationality</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                  <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select nationality" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="indian">Indian</SelectItem>
-                      <SelectItem value="american">American</SelectItem>
-                      <SelectItem value="german">German</SelectItem>
-                      {/* Add more options here */}
+                    {countries.map((country:any) => (
+                      <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -343,15 +363,14 @@ export const AccountSettings = () => {
               <FormItem>
                 <FormLabel>Country of Residence</FormLabel>
                 <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                  <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Country of Residence" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="indian">Indian</SelectItem>
-                      <SelectItem value="american">American</SelectItem>
-                      <SelectItem value="german">German</SelectItem>
-                      {/* Add more options here */}
+                    {countries.map((country:any) => (
+                      <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                    ))}
                     </SelectContent>
                   </Select>
                 </FormControl>

@@ -71,6 +71,22 @@ export class DoxboxService {
     }
   }
 
+  async getCountryList(): Promise<any> {
+    const config = {
+      method: 'get',
+      url: `${this.configService.get("DOXBOXURL")}/get-country-list`,
+      headers: {},
+    };
+
+    try {
+      const response = await axios(config);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching country list:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
 
 
 
