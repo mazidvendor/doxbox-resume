@@ -17,14 +17,14 @@ export const UserAvatar = ({ size = 36, className }: Props) => {
   if (user.picture) {
     picture = (
       <img
-        alt={user.name}
+        alt={user.fname}
         src={user.picture}
         className="rounded-full"
         style={{ width: size, height: size }}
       />
     );
   } else {
-    const initials = getInitials(user.name);
+    const initials = getInitials(user.fname);
 
     picture = (
       <div
