@@ -19,6 +19,7 @@ import { Config } from "../config/schema";
 import { MailService } from "../mail/mail.service";
 import { UserService } from "../user/user.service";
 import { Payload } from "./utils/payload";
+import { DoxboxService } from "../doxbox/doxbox.service";
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
+    private readonly doxboxService:DoxboxService
   ) {}
 
   private hash(password: string): Promise<string> {
@@ -102,6 +104,8 @@ export class AuthService {
     const hashedPassword = await this.hash(registerDto.password);
 
     try {
+      const doxboxuser = await this.doxboxService.registerUserInDoxbox(registerDto);
+      
       const user = await this.userService.create({
         fname: registerDto.fname,
         mname: registerDto.mname,
@@ -109,6 +113,7 @@ export class AuthService {
         email: registerDto.email,
         username: processUsername(registerDto.email.split("@")[0]),//registerDto.email, //registerDto.username,
         locale: registerDto.locale,
+        globalUserId:doxboxuser.data.id.toString(),
         provider: "email",
         emailVerified: false, // Set to true if you don't want to verify user's email
         secrets: { create: { password: hashedPassword } },

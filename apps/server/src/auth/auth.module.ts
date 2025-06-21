@@ -17,13 +17,14 @@ import { LocalStrategy } from "./strategy/local.strategy";
 import { OpenIDStrategy } from "./strategy/openid.strategy";
 import { RefreshStrategy } from "./strategy/refresh.strategy";
 import { TwoFactorStrategy } from "./strategy/two-factor.strategy";
+import { DoxboxModule } from "../doxbox/doxbox.module";
 
 @Module({})
 export class AuthModule {
   static register(): DynamicModule {
     return {
       module: AuthModule,
-      imports: [PassportModule, JwtModule, UserModule, MailModule],
+      imports: [PassportModule, JwtModule, UserModule, MailModule,DoxboxModule],
       controllers: [AuthController],
       providers: [
         AuthService,

@@ -32,6 +32,7 @@ model User {
   countryresidence     String   @default("")
   cityresidence        String   @default("")
   residentaladdress    String   @default("")
+  globalUserId         String   @default("")
   picture              String?
   username             String   @unique
   email                String   @unique
