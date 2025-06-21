@@ -111,6 +111,14 @@ export class AuthService {
         mname: registerDto.mname,
         lname: registerDto.lname,
         email: registerDto.email,
+        gender: registerDto.gender,
+        dob: registerDto.dob,
+        nationality: registerDto.nationality,
+        countryresidence: registerDto.countryresidence,
+        cityresidence: registerDto.cityresidence,
+        residentaladdress: registerDto.residentaladdress,
+        mobile: registerDto.mobile,
+        countryCode: registerDto.countryCode,
         username: processUsername(registerDto.email.split("@")[0]),//registerDto.email, //registerDto.username,
         locale: registerDto.locale,
         globalUserId:doxboxuser.data.id.toString(),
@@ -151,7 +159,6 @@ export class AuthService {
 
       // await this.validatePassword(password, user.secrets.password);
       await this.setLastSignedIn(user.email);
-
       return user;
     } catch {
       throw new BadRequestException(ErrorMessage.InvalidCredentials);

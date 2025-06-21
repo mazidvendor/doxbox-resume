@@ -54,8 +54,18 @@ export class UserController {
       return await this.userService.updateByEmail(email, {
         fname: updateUserDto.fname,
         picture: updateUserDto.picture,
-        username: updateUserDto.email,
+        username: updateUserDto.username,
         locale: updateUserDto.locale,
+        mname: updateUserDto.mname,
+        lname: updateUserDto.lname,
+        gender: updateUserDto.gender,
+        dob: updateUserDto.dob,
+        nationality: updateUserDto.nationality,
+        countryresidence: updateUserDto.countryresidence,
+        cityresidence: updateUserDto.cityresidence,
+        residentaladdress: updateUserDto.residentaladdress,
+        mobile: updateUserDto.mobile,
+        countryCode: updateUserDto.countryCode,
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {

@@ -59,6 +59,7 @@ export class UserService {
       // If the user exists, return it
       if (user) return user;
 
+
       // Otherwise, find the user by username
       // If the user doesn't exist, throw an error
       return this.prisma.user.findUniqueOrThrow({
