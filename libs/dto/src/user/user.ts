@@ -26,9 +26,9 @@ export const userSchema = z.object({
   countryresidence: z.literal("").or(z.string().min(1).max(255)),
   cityresidence: z.literal("").or(z.string().min(1).max(255)),
   residentaladdress: z.literal("").or(z.string().min(1).max(255)),
-
+  mobile: z.literal("").or(z.string().min(1).max(255)),
+  countryCode: z.literal("").or(z.string().min(1).max(255)),
   
-
   picture: z.literal("").or(z.null()).or(z.string().url()),
   username: usernameSchema,
   email: z

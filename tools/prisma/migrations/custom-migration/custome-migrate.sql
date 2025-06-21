@@ -14,3 +14,7 @@ ADD COLUMN "residentaladdress" TEXT NOT NULL DEFAULT '';
 -- Drop old column
 ALTER TABLE "User"
 DROP COLUMN "name";
+
+ALTER TABLE "User"
+ADD COLUMN "mobile" TEXT NOT NULL DEFAULT '',
+ADD COLUMN "countryCode" TEXT NOT NULL DEFAULT '';

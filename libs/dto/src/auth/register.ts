@@ -15,6 +15,8 @@ export const registerSchema = userSchema
     cityresidence: true,
     residentaladdress: true,
     email: true, 
+    mobile: true,
+    countryCode: true,
     // username: true,
      locale: true
   })

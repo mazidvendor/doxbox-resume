@@ -26,6 +26,8 @@ model User {
   lname                String   @default("")
   gender               String   @default("")
   dob                  String   @default("")
+  mobile               String   @default("")
+  countryCode          String   @default("")
   nationality          String   @default("")
   countryresidence     String   @default("")
   cityresidence        String   @default("")
