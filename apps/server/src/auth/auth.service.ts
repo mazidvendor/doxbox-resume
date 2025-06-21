@@ -11,7 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthProvidersDto, LoginDto, RegisterDto, UserWithSecrets } from "@reactive-resume/dto";
-import { ErrorMessage } from "@reactive-resume/utils";
+import { ErrorMessage, processUsername } from "@reactive-resume/utils";
 import * as bcryptjs from "bcryptjs";
 import { authenticator } from "otplib";
 
@@ -107,7 +107,7 @@ export class AuthService {
         mname: registerDto.mname,
         lname: registerDto.lname,
         email: registerDto.email,
-        username: registerDto.email, //registerDto.username,
+        username: processUsername(registerDto.email.split("@")[0]),//registerDto.email, //registerDto.username,
         locale: registerDto.locale,
         provider: "email",
         emailVerified: false, // Set to true if you don't want to verify user's email
@@ -119,6 +119,7 @@ export class AuthService {
 
       return user as UserWithSecrets;
     } catch (error) {
+      console.log("error",error)
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
         throw new BadRequestException(ErrorMessage.UserAlreadyExists);
       }

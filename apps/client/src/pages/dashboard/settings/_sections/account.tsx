@@ -39,7 +39,7 @@ export const AccountSettings = () => {
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
       picture: "",
-      name: "",
+      fname: "",
       username: "",
       email: "",
     },
@@ -54,7 +54,7 @@ export const AccountSettings = () => {
 
     form.reset({
       picture: user.picture ?? "",
-      name: user.name,
+      fname: user.fname,
       username: user.username,
       email: user.email,
     });
@@ -72,7 +72,7 @@ export const AccountSettings = () => {
     }
 
     await updateUser({
-      name: data.name,
+      fname: data.fname,
       email: data.email,
       picture: data.picture,
       username: data.username,
