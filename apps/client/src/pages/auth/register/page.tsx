@@ -23,7 +23,7 @@ import {
   SelectValue
 } from "@reactive-resume/ui";
 import { cn } from "@reactive-resume/utils";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -34,6 +34,7 @@ import { useFeatureFlags } from "@/client/services/feature";
 import { Select } from "@radix-ui/react-select";
 import PhoneInput, { getCountryCallingCode, parsePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import { axios } from "@/client/libs/axios";
 
 
 type FormValues = z.infer<typeof registerSchema>;
@@ -62,6 +63,26 @@ export const RegisterPage = () => {
   const [countryCode, setCountryCode] = useState('');
   const [currentForm, setCurrentForm] = useState('signup');
   const [formData, setFormData] = useState<FormValues>(defaultValues);
+
+
+  const [countries, setCountries] = useState<any>([]);
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get<any>(
+        '/doxbox/country-list'
+      );
+      setCountries(response.data?.data ?? []);
+    } catch (error) {
+      console.error('Failed to fetch country list:', error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
 
   const formRef = useRef<HTMLFormElement>(null);
   usePasswordToggle(formRef);
@@ -115,7 +136,7 @@ export const RegisterPage = () => {
           </Button>
         </h6>
       </div>
-    
+
       {flags.isSignupsDisabled && (
         <Alert variant="error">
           <AlertTitle>{t`Signups are currently disabled by the administrator.`}</AlertTitle>
@@ -288,15 +309,14 @@ export const RegisterPage = () => {
                   <FormItem>
                     <FormLabel>Nationality</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                      <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select nationality" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="indian">Indian</SelectItem>
-                          <SelectItem value="american">American</SelectItem>
-                          <SelectItem value="german">German</SelectItem>
-                          {/* Add more options here */}
+                          {countries.map((country: any) => (
+                            <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -312,17 +332,17 @@ export const RegisterPage = () => {
                   <FormItem>
                     <FormLabel>Country of Residence</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
+                      <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select Country of Residence" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="indian">Indian</SelectItem>
-                          <SelectItem value="american">American</SelectItem>
-                          <SelectItem value="german">German</SelectItem>
-                          {/* Add more options here */}
+                          {countries.map((country: any) => (
+                            <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
+
                     </FormControl>
                     <FormMessage />
                   </FormItem>
