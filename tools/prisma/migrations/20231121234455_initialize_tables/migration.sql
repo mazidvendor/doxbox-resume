@@ -7,7 +7,6 @@ CREATE TYPE "Visibility" AS ENUM ('public', 'private');
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
     "picture" TEXT,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -17,6 +16,18 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "provider" "Provider" NOT NULL,
+    "globalUserId" TEXT NOT NULL DEFAULT '',
+    "fname" TEXT NOT NULL DEFAULT '',
+    "mname" TEXT NOT NULL DEFAULT '',
+    "lname" TEXT NOT NULL DEFAULT '',
+    "gender" TEXT NOT NULL DEFAULT '',
+    "dob" TEXT NOT NULL DEFAULT '',
+    "nationality" TEXT NOT NULL DEFAULT '',
+    "countryresidence" TEXT NOT NULL DEFAULT '',
+    "cityresidence" TEXT NOT NULL DEFAULT '',
+    "residentaladdress" TEXT NOT NULL DEFAULT '',
+    "mobile" TEXT NOT NULL DEFAULT '',
+    "countryCode" TEXT NOT NULL DEFAULT '',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
