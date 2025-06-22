@@ -203,7 +203,7 @@ export class AuthService {
     await this.userService.updateByResetToken(token, {
       resetToken: null,
       password: hashedPassword,
-    });
+    },password);
   }
 
   getAuthProviders() {

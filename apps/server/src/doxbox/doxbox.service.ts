@@ -114,6 +114,29 @@ export class DoxboxService {
   }
 
 
+  async resetPassword(email: string, password: string): Promise<any> {
+    const data = {
+      email,
+      password,
+    };
+
+    const config = {
+      method: 'post',
+      url: `${this.configService.get("DOXBOXURL")}/reset-password`,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data,
+    };
+
+    try {
+      const response = await axios(config);
+      return response.data;
+    } catch (error) {
+      console.error('reset failed:', error.response?.data || error.message);
+      throw error;
+    }
+  }
 
 
   async getCountryList(): Promise<any> {
