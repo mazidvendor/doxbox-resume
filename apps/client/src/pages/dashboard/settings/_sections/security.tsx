@@ -46,17 +46,28 @@ export const SecuritySettings = () => {
   };
 
   const onSubmit = async (data: FormValues) => {
-    await updatePassword({
-      currentPassword: data.currentPassword,
-      newPassword: data.newPassword,
-    });
+    
+    try {
+      await updatePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+  
+      toast({
+        variant: "success",
+        title: t`Your password has been updated successfully.`,
+      });
+      onReset();
+    } catch (error:any) {
+        toast({
+          variant: "error",
+          title: error?.message || "unknown error",
+        });
+    }
 
-    toast({
-      variant: "success",
-      title: t`Your password has been updated successfully.`,
-    });
+   
 
-    onReset();
+    
   };
 
   return (
@@ -125,7 +136,7 @@ export const SecuritySettings = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="two-factor">
+        {/* <AccordionItem value="two-factor">
           <AccordionTrigger>{t`Two-Factor Authentication`}</AccordionTrigger>
           <AccordionContent>
             {user?.twoFactorEnabled ? (
@@ -164,7 +175,7 @@ export const SecuritySettings = () => {
               </Button>
             )}
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
       </Accordion>
     </div>
   );

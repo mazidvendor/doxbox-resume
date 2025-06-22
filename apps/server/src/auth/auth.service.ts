@@ -11,7 +11,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { AuthProvidersDto, LoginDto, RegisterDto, UserWithSecrets } from "@reactive-resume/dto";
-import { ErrorMessage } from "@reactive-resume/utils";
+import { ErrorMessage, processUsername } from "@reactive-resume/utils";
 import * as bcryptjs from "bcryptjs";
 import { authenticator } from "otplib";
 
@@ -19,6 +19,8 @@ import { Config } from "../config/schema";
 import { MailService } from "../mail/mail.service";
 import { UserService } from "../user/user.service";
 import { Payload } from "./utils/payload";
+import { DoxboxService } from "../doxbox/doxbox.service";
+import { Provider } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -27,7 +29,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly doxboxService: DoxboxService
+  ) { }
 
   private hash(password: string): Promise<string> {
     return bcryptjs.hash(password, 10);
@@ -102,11 +105,24 @@ export class AuthService {
     const hashedPassword = await this.hash(registerDto.password);
 
     try {
+      const doxboxuser = await this.doxboxService.registerUserInDoxbox(registerDto);
+
       const user = await this.userService.create({
-        name: registerDto.name,
+        fname: registerDto.fname,
+        mname: registerDto.mname,
+        lname: registerDto.lname,
         email: registerDto.email,
-        username: registerDto.username,
+        gender: registerDto.gender,
+        dob: registerDto.dob,
+        nationality: registerDto.nationality,
+        countryresidence: registerDto.countryresidence,
+        cityresidence: registerDto.cityresidence,
+        residentaladdress: registerDto.residentaladdress,
+        mobile: registerDto.mobile,
+        countryCode: registerDto.countryCode,
+        username: processUsername(registerDto.email.split("@")[0]),//registerDto.email, //registerDto.username,
         locale: registerDto.locale,
+        globalUserId: doxboxuser.data.id.toString(),
         provider: "email",
         emailVerified: false, // Set to true if you don't want to verify user's email
         secrets: { create: { password: hashedPassword } },
@@ -117,6 +133,7 @@ export class AuthService {
 
       return user as UserWithSecrets;
     } catch (error) {
+      console.log("error", error)
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
         throw new BadRequestException(ErrorMessage.UserAlreadyExists);
       }
@@ -128,15 +145,21 @@ export class AuthService {
 
   async authenticate({ identifier, password }: LoginDto) {
     try {
+      const doxboxuser = await this.doxboxService.loginUser(identifier, password);
+      if (!doxboxuser?.data?.id) {
+        throw new BadRequestException(doxboxuser?.message);
+      }
       const user = await this.userService.findOneByIdentifierOrThrow(identifier);
 
-      if (!user.secrets?.password) {
-        throw new BadRequestException(ErrorMessage.OAuthUser);
+      if (doxboxuser.data.id != user.globalUserId) {
+        throw new BadRequestException("User not exist in this tenant.");
       }
+      // if (!user.secrets?.password) {
+      //   throw new BadRequestException(ErrorMessage.OAuthUser);
+      // }
 
-      await this.validatePassword(password, user.secrets.password);
+      // await this.validatePassword(password, user.secrets.password);
       await this.setLastSignedIn(user.email);
-
       return user;
     } catch {
       throw new BadRequestException(ErrorMessage.InvalidCredentials);
@@ -160,19 +183,33 @@ export class AuthService {
   }
 
   async updatePassword(email: string, currentPassword: string, newPassword: string) {
-    const user = await this.userService.findOneByIdentifierOrThrow(email);
 
-    if (!user.secrets?.password) {
-      throw new BadRequestException(ErrorMessage.OAuthUser);
+    try {
+      const user = await this.userService.findOneByIdentifierOrThrow(email);
+
+      // if (!user.secrets?.password) {
+      //   throw new BadRequestException(ErrorMessage.OAuthUser);
+      // }
+
+      // await this.validatePassword(currentPassword, user.secrets.password);
+
+      await this.doxboxService.changePassword({ currentPassword, newPassword, user_id: user.globalUserId });
+
+      const newHashedPassword = await this.hash(newPassword);
+
+      await this.userService.updateByEmail(email, {
+        secrets: { update: { password: newHashedPassword } },
+      });
+    } catch (error) {
+      console.log("error", error)
+      if (error.status == 400) {
+        throw new BadRequestException("old password does not match")
+      } else {
+        throw error
+      }
     }
 
-    await this.validatePassword(currentPassword, user.secrets.password);
 
-    const newHashedPassword = await this.hash(newPassword);
-
-    await this.userService.updateByEmail(email, {
-      secrets: { update: { password: newHashedPassword } },
-    });
   }
 
   async resetPassword(token: string, password: string) {
@@ -181,7 +218,7 @@ export class AuthService {
     await this.userService.updateByResetToken(token, {
       resetToken: null,
       password: hashedPassword,
-    });
+    }, password);
   }
 
   getAuthProviders() {
@@ -368,4 +405,41 @@ export class AuthService {
 
     return user as UserWithSecrets;
   }
+
+
+  // Email Verification Flows
+  async addUpdateUserFromDoxbox(body: any) {
+    try {
+
+      const objReq = {
+        "fname": body.fname,
+        "mname": body?.mname ?? "",
+        "lname": body?.lname ?? "",
+        "gender": body?.gender ?? "",
+        "dob": body?.dob ?? "",
+        "nationality": body?.nationality ?? "",
+        "countryresidence": body?.countryresidence ?? "",
+        "cityresidence": body?.cityresidence ?? "",
+        "residentaladdress": body?.residentaladdress ?? "",
+        "email": body.email ,
+        "locale": "en-US",
+        "countryCode": body?.countryCode ?? "",
+        "mobile": body?.mobile ?? "",
+        username: processUsername(body.email.split("@")[0]),//registerDto.email, //registerDto.username,
+        globalUserId: body.user_id?.toString(),
+        provider: Provider.email,
+        // emailVerified: false,
+        picture:body.picture
+      }
+      
+      const userId = body.user_id;
+      await this.userService.addUpdateUserFromDoxbox(objReq, userId);
+
+    } catch (error) {
+      Logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+
 }

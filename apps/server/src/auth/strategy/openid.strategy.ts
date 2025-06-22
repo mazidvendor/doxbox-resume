@@ -61,9 +61,9 @@ export class OpenIDStrategy extends PassportStrategy(Strategy, "openid") {
           picture,
           locale: "en-US",
           provider: "openid",
-          name: displayName || uniqueId,
+          fname: displayName || uniqueId,
           emailVerified: true, // auto-verify emails
-          username: processUsername(username ?? email.split("@")[0]),
+          username: processUsername(email.split("@")[0]), //username ?? email.split("@")[0]
           secrets: { create: {} },
         });
 

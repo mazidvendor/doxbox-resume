@@ -18,6 +18,7 @@ import { ResumeModule } from "./resume/resume.module";
 import { StorageModule } from "./storage/storage.module";
 import { TranslationModule } from "./translation/translation.module";
 import { UserModule } from "./user/user.module";
+import { DoxboxModule } from "./doxbox/doxbox.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserModule } from "./user/user.module";
     // Feature Modules
     AuthModule.register(),
     UserModule,
+    DoxboxModule,
     ResumeModule,
     StorageModule,
     PrinterModule,

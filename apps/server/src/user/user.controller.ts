@@ -20,6 +20,7 @@ import { AuthService } from "../auth/auth.service";
 import { TwoFactorGuard } from "../auth/guards/two-factor.guard";
 import { User } from "./decorators/user.decorator";
 import { UserService } from "./user.service";
+import { DoxboxService } from "../doxbox/doxbox.service";
 
 @ApiTags("User")
 @Controller("user")
@@ -27,6 +28,7 @@ export class UserController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly doxboxService: DoxboxService,
   ) {}
 
   @Get("me")
@@ -37,7 +39,7 @@ export class UserController {
 
   @Patch("me")
   @UseGuards(TwoFactorGuard)
-  async update(@User("email") email: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(@User("email") email: string,@User("globalUserId") globalUserId: string, @Body() updateUserDto: UpdateUserDto) {
     try {
       // If user is updating their email, send a verification email
       if (updateUserDto.email && updateUserDto.email !== email) {
@@ -51,11 +53,23 @@ export class UserController {
         email = updateUserDto.email;
       }
 
+      await this.doxboxService.updateDoxboxProfile({...updateUserDto,...{user_id:globalUserId}});
+
       return await this.userService.updateByEmail(email, {
-        name: updateUserDto.name,
+        fname: updateUserDto.fname,
         picture: updateUserDto.picture,
         username: updateUserDto.username,
         locale: updateUserDto.locale,
+        mname: updateUserDto.mname,
+        lname: updateUserDto.lname,
+        gender: updateUserDto.gender,
+        dob: updateUserDto.dob,
+        nationality: updateUserDto.nationality,
+        countryresidence: updateUserDto.countryresidence,
+        cityresidence: updateUserDto.cityresidence,
+        residentaladdress: updateUserDto.residentaladdress,
+        mobile: updateUserDto.mobile,
+        countryCode: updateUserDto.countryCode,
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {

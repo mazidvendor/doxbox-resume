@@ -6,6 +6,7 @@ import { updateUserSchema } from "@reactive-resume/dto";
 import {
   Button,
   buttonVariants,
+  DatePicker,
   Form,
   FormControl,
   FormDescription,
@@ -14,10 +15,15 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Radio,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@reactive-resume/ui";
 import { cn } from "@reactive-resume/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { UserAvatar } from "@/client/components/user-avatar";
@@ -25,6 +31,8 @@ import { useToast } from "@/client/hooks/use-toast";
 import { useResendVerificationEmail } from "@/client/services/auth";
 import { useUploadImage } from "@/client/services/storage";
 import { useUpdateUser, useUser } from "@/client/services/user";
+import { Select } from "@radix-ui/react-select";
+import { axios } from "@/client/libs/axios";
 
 export const AccountSettings = () => {
   const { user } = useUser();
@@ -35,13 +43,43 @@ export const AccountSettings = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+
+
+  const [countries, setCountries] = useState<any>([]);
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get<any>(
+        '/doxbox/country-list'
+      );
+      setCountries(response.data?.data??[]);
+    } catch (error) {
+      console.error('Failed to fetch country list:', error);
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, []);
+
   const form = useForm<UpdateUserDto>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
       picture: "",
-      name: "",
+      fname: "",
+      mname: "",
+      lname: "",
       username: "",
+      gender: "",
+      dob: "",
+      nationality: "",
+      countryresidence: "",
+      cityresidence: "",
+      residentaladdress: "",
       email: "",
+      mobile: "",
+      countryCode: "",
     },
   });
 
@@ -54,9 +92,19 @@ export const AccountSettings = () => {
 
     form.reset({
       picture: user.picture ?? "",
-      name: user.name,
+      fname: user.fname,
       username: user.username,
-      email: user.email,
+      mname: user.mname,
+      lname: user.lname,
+      gender: user.gender,
+      dob: user.dob,
+      nationality: user.nationality,
+      countryresidence: user.countryresidence,
+      cityresidence: user.cityresidence,
+      residentaladdress: user.residentaladdress,
+      mobile: user.mobile,
+      countryCode: user.countryCode,
+      email: user.email
     });
   };
 
@@ -72,10 +120,20 @@ export const AccountSettings = () => {
     }
 
     await updateUser({
-      name: data.name,
+      fname: data.fname,
       email: data.email,
       picture: data.picture,
       username: data.username,
+      mname: data.mname,
+      lname: data.lname,
+      gender: data.gender,
+      dob: data.dob,
+      nationality: data.nationality,
+      countryresidence: data.countryresidence,
+      cityresidence: data.cityresidence,
+      residentaladdress: data.residentaladdress,
+      mobile: data.mobile,
+      countryCode: data.countryCode,
     });
 
     form.reset(data);
@@ -146,13 +204,39 @@ export const AccountSettings = () => {
           />
 
           <FormField
-            name="name"
+            name="fname"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Name`}</FormLabel>
+                <FormLabel>{t`First Name`}</FormLabel>
                 <FormControl>
-                  <Input autoComplete="name" {...field} />
+                  <Input autoComplete="fname" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="mname"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`Middle Name`}</FormLabel>
+                <FormControl>
+                  <Input autoComplete="mname" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="lname"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`Last Name`}</FormLabel>
+                <FormControl>
+                  <Input autoComplete="lname" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -200,6 +284,139 @@ export const AccountSettings = () => {
                     </Button>
                   )}
                 </FormDescription>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="gender"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`Gender`}</FormLabel>
+                <FormControl>
+                  <div className="flex gap-4">
+                    {["Male", "Female"].map((option) => (
+                      <label key={option} className="flex items-center gap-2">
+                        <Radio
+                          value={option}
+                          checked={field.value === option}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                        />
+                        <span className="capitalize">{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`Date of Birth`}</FormLabel>
+                <FormControl>
+                  <DatePicker
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="YYYY-MM-DD"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="nationality"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nationality</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select nationality" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    {countries.map((country:any) => (
+                      <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                    ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="countryresidence"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country of Residence</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field?.value?.trim() ?? ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Country of Residence" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    {countries.map((country:any) => (
+                      <SelectItem value={country?.country_name?.trim()}>{country?.country_name?.trim()}</SelectItem>
+                    ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="cityresidence"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`City of Residence`}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t({
+                      message: "City of Residence",
+                      context:
+                        "Localized version of a placeholder City of Residence. For example, Max Mustermann in German or Jan Kowalski in Polish.",
+                    })}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="residentaladdress"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t`Residental Address`}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t({
+                      message: "Residental Address",
+                      context:
+                        "Localized version of a placeholder Residental Address. For example, Max Mustermann in German or Jan Kowalski in Polish.",
+                    })}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />

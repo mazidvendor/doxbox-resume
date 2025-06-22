@@ -5,12 +5,14 @@ import { ErrorMessage } from "@reactive-resume/utils";
 import { PrismaService } from "nestjs-prisma";
 
 import { StorageService } from "../storage/storage.service";
+import { DoxboxService } from "../doxbox/doxbox.service";
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
+    private readonly doxboxService:DoxboxService
   ) {}
 
   async findOneById(id: string): Promise<UserWithSecrets> {
@@ -59,6 +61,7 @@ export class UserService {
       // If the user exists, return it
       if (user) return user;
 
+
       // Otherwise, find the user by username
       // If the user doesn't exist, throw an error
       return this.prisma.user.findUniqueOrThrow({
@@ -81,8 +84,16 @@ export class UserService {
   async updateByResetToken(
     resetToken: string,
     data: Prisma.SecretsUpdateArgs["data"],
+    password:string
   ): Promise<void> {
-    await this.prisma.secrets.update({ where: { resetToken }, data });
+    const objSecret = await this.prisma.secrets.findFirst({ where: { resetToken }});
+    const objUser = await this.prisma.user.findFirst({ where: { id:objSecret?.userId }});
+    if(objUser){
+      await this.doxboxService.resetPassword(objUser.email,password);
+      await this.prisma.secrets.update({ where: { resetToken }, data });
+    }else{
+      throw new InternalServerErrorException("Failed to reset");
+    }
   }
 
   async deleteOneById(id: string): Promise<void> {
@@ -90,5 +101,16 @@ export class UserService {
       this.storageService.deleteFolder(id),
       this.prisma.user.delete({ where: { id } }),
     ]);
+  }
+
+  async addUpdateUserFromDoxbox(data: Prisma.UserCreateInput,globalUserId:string): Promise<User> {
+      
+      const objUser = await this.prisma.user.findFirst({ where: { globalUserId:globalUserId }});
+      if(objUser){
+        return await this.prisma.user.update({ where: { id:objUser.id }, data });
+      }else{
+        data.emailVerified= false;
+        return await this.prisma.user.create({ data, include: { secrets: true } });
+      }
   }
 }

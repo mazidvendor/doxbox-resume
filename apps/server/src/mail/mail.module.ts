@@ -23,6 +23,8 @@ const emptyTransporter = nodemailer.createTransport({});
             "MailModule",
           );
         }
+        console.log("from",from)
+        console.log("smtpUrl",smtpUrl)
 
         return {
           defaults: { from },

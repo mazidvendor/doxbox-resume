@@ -20,19 +20,30 @@ enum Visibility {
 }
 
 model User {
-  id               String   @id @default(cuid())
-  name             String
-  picture          String?
-  username         String   @unique
-  email            String   @unique
-  locale           String   @default("en-US")
-  emailVerified    Boolean  @default(false)
-  twoFactorEnabled Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  provider         Provider
-  secrets          Secrets?
-  resumes          Resume[]
+  id                   String   @id @default(cuid())
+  fname                String
+  mname                String   @default("")
+  lname                String   @default("")
+  gender               String   @default("")
+  dob                  String   @default("")
+  mobile               String   @default("")
+  countryCode          String   @default("")
+  nationality          String   @default("")
+  countryresidence     String   @default("")
+  cityresidence        String   @default("")
+  residentaladdress    String   @default("")
+  globalUserId         String   @default("")
+  picture              String?
+  username             String   @unique
+  email                String   @unique
+  locale               String   @default("en-US")
+  emailVerified        Boolean  @default(false)
+  twoFactorEnabled     Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  provider             Provider
+  secrets              Secrets?
+  resumes              Resume[]
 }
 
 model Secrets {
