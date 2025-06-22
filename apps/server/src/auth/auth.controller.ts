@@ -334,4 +334,15 @@ export class AuthController {
       message: "You should have received a new email with a link to verify your email address.",
     };
   }
+
+  @ApiTags("Add or Update user")
+  @Post("add-update-user")
+  async addUpdateUserFromDoxbox(
+    @Body() body:any
+  ) {
+    await this.authService.addUpdateUserFromDoxbox(body);
+    return {
+      message: "add/updated successfully.",
+    };
+  }
 }

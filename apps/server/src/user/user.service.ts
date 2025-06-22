@@ -102,4 +102,15 @@ export class UserService {
       this.prisma.user.delete({ where: { id } }),
     ]);
   }
+
+  async addUpdateUserFromDoxbox(data: Prisma.UserCreateInput,globalUserId:string): Promise<User> {
+      
+      const objUser = await this.prisma.user.findFirst({ where: { globalUserId:globalUserId }});
+      if(objUser){
+        return await this.prisma.user.update({ where: { id:objUser.id }, data });
+      }else{
+        data.emailVerified= false;
+        return await this.prisma.user.create({ data, include: { secrets: true } });
+      }
+  }
 }
