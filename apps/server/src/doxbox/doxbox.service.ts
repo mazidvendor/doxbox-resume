@@ -138,6 +138,32 @@ export class DoxboxService {
     }
   }
 
+  async changePassword(payload:any): Promise<any> {
+    const data = {
+      old_password:payload.currentPassword,
+      new_password:payload.newPassword,
+      cyp_cred: this.configService.get("DOXBOXURL_CRED"),
+      user_id: payload.user_id
+    };
+
+    const config = {
+      method: 'post',
+      url: `${this.configService.get("DOXBOXURL")}/change-pass-cyp`,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data,
+    };
+
+    try {
+      const response = await axios(config);
+      return response.data;
+    } catch (error) {
+      console.error('reset failed:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
 
   async getCountryList(): Promise<any> {
     const config = {

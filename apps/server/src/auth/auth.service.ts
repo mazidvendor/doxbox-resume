@@ -182,19 +182,33 @@ export class AuthService {
   }
 
   async updatePassword(email: string, currentPassword: string, newPassword: string) {
-    const user = await this.userService.findOneByIdentifierOrThrow(email);
 
-    if (!user.secrets?.password) {
-      throw new BadRequestException(ErrorMessage.OAuthUser);
+    try {
+      const user = await this.userService.findOneByIdentifierOrThrow(email);
+
+      // if (!user.secrets?.password) {
+      //   throw new BadRequestException(ErrorMessage.OAuthUser);
+      // }
+  
+      // await this.validatePassword(currentPassword, user.secrets.password);
+  
+      await this.doxboxService.changePassword({currentPassword,newPassword,user_id:user.globalUserId});
+  
+      const newHashedPassword = await this.hash(newPassword);
+  
+      await this.userService.updateByEmail(email, {
+        secrets: { update: { password: newHashedPassword } },
+      });
+    } catch (error) {
+      console.log("error",error)
+      if(error.status==400){
+        throw new BadRequestException("old password does not match")
+      }else{
+        throw error
+      }
     }
 
-    await this.validatePassword(currentPassword, user.secrets.password);
-
-    const newHashedPassword = await this.hash(newPassword);
-
-    await this.userService.updateByEmail(email, {
-      secrets: { update: { password: newHashedPassword } },
-    });
+    
   }
 
   async resetPassword(token: string, password: string) {
