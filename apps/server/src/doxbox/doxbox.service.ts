@@ -1,7 +1,9 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { ForbiddenException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { RegisterDto } from "@reactive-resume/dto";
+import { RegisterDto, UpdateUserDto } from "@reactive-resume/dto";
 import axios from 'axios';
+import FormData = require('form-data');
+import * as fs from 'fs';
 
 @Injectable()
 export class DoxboxService {
@@ -70,6 +72,49 @@ export class DoxboxService {
       throw error;
     }
   }
+
+  async updateDoxboxProfile(payload:UpdateUserDto & { user_id: string }): Promise<any> {
+    const formData = new FormData();
+
+    formData.append('cyp_cred', this.configService.get("DOXBOXURL_CRED"));
+    formData.append('user_id', payload.user_id);
+    formData.append('first_name', payload.fname);
+    formData.append('middle_name',payload.mname);
+    formData.append('last_name', payload.lname);
+    formData.append('email', payload.email);
+    // formData.append('image', fs.createReadStream(path.resolve('/home/majid/Downloads/icon@2x (1).png')));
+    formData.append('residence_address', payload.residentaladdress);
+    formData.append('address', payload.cityresidence);
+    formData.append('country',payload.countryresidence);
+    formData.append('nationality', payload.nationality);
+    if(payload.dob){
+      formData.append('dob', this.formatDateDMY(payload.dob));
+    }
+    formData.append('gender',payload.gender);
+
+    try {
+      const response = await axios.post(
+        `${this.configService.get("DOXBOXURL")}/update-by-cyp`,
+        formData,
+        {
+          headers: formData.getHeaders(),
+          maxBodyLength: Infinity,
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      if(error?.status==403){
+        throw new ForbiddenException('Request failed with status code 403');
+      }else{
+        throw new Error('Failed to send form data');
+      }
+    }
+  }
+
+
+
 
   async getCountryList(): Promise<any> {
     const config = {
