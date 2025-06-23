@@ -156,14 +156,10 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`First name`}</FormLabel>
+                    <FormLabel>{`First name`}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t({
-                          message: "John Doe",
-                          context:
-                            "Localized version of a placeholder fname. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                        })}
+                        placeholder={"John Doe"}
                         {...field}
                       />
                     </FormControl>
@@ -176,14 +172,10 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`Middle Name`}</FormLabel>
+                    <FormLabel>{`Middle Name`}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t({
-                          message: "John Doe",
-                          context:
-                            "Localized version of a placeholder middle name. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                        })}
+                        placeholder={"John Doe"}
                         {...field}
                       />
                     </FormControl>
@@ -196,14 +188,10 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`Last Name`}</FormLabel>
+                    <FormLabel>{`Last Name`}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t({
-                          message: "John Doe",
-                          context:
-                            "Localized version of a placeholder Last Name. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                        })}
+                        placeholder={"John Doe"}
                         {...field}
                       />
                     </FormControl>
@@ -261,7 +249,7 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`Gender`}</FormLabel>
+                    <FormLabel>{`Gender`}</FormLabel>
                     <FormControl>
                       <div className="flex gap-4">
                         {["Male", "Female"].map((option) => (
@@ -289,7 +277,7 @@ export const RegisterPage = () => {
                 name="dob"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`Date of Birth`}</FormLabel>
+                    <FormLabel>{`Date of Birth`}</FormLabel>
                     <FormControl>
                       <DatePicker
                         {...field}
@@ -354,14 +342,10 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`City of Residence`}</FormLabel>
+                    <FormLabel>{`City of Residence`}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t({
-                          message: "City of Residence",
-                          context:
-                            "Localized version of a placeholder City of Residence. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                        })}
+                        placeholder={"City of Residence"}
                         {...field}
                       />
                     </FormControl>
@@ -375,14 +359,10 @@ export const RegisterPage = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t`Residental Address`}</FormLabel>
+                    <FormLabel>{`Residental Address`}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t({
-                          message: "Residental Address",
-                          context:
-                            "Localized version of a placeholder Residental Address. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                        })}
+                        placeholder={"Residental Address"}
                         {...field}
                       />
                     </FormControl>

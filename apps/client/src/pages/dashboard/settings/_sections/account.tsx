@@ -208,7 +208,7 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`First Name`}</FormLabel>
+                <FormLabel>{`First Name`}</FormLabel>
                 <FormControl>
                   <Input autoComplete="fname" {...field} />
                 </FormControl>
@@ -221,7 +221,7 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Middle Name`}</FormLabel>
+                <FormLabel>{`Middle Name`}</FormLabel>
                 <FormControl>
                   <Input autoComplete="mname" {...field} />
                 </FormControl>
@@ -234,7 +234,7 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Last Name`}</FormLabel>
+                <FormLabel>{`Last Name`}</FormLabel>
                 <FormControl>
                   <Input autoComplete="lname" {...field} />
                 </FormControl>
@@ -292,7 +292,7 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Gender`}</FormLabel>
+                <FormLabel>{`Gender`}</FormLabel>
                 <FormControl>
                   <div className="flex gap-4">
                     {["Male", "Female"].map((option) => (
@@ -320,7 +320,7 @@ export const AccountSettings = () => {
             name="dob"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Date of Birth`}</FormLabel>
+                <FormLabel>{`Date of Birth`}</FormLabel>
                 <FormControl>
                   <DatePicker
                     {...field}
@@ -384,14 +384,10 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`City of Residence`}</FormLabel>
+                <FormLabel>{`City of Residence`}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t({
-                      message: "City of Residence",
-                      context:
-                        "Localized version of a placeholder City of Residence. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                    })}
+                    placeholder={"City of Residence"}
                     {...field}
                   />
                 </FormControl>
@@ -405,14 +401,10 @@ export const AccountSettings = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t`Residental Address`}</FormLabel>
+                <FormLabel>{`Residental Address`}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t({
-                      message: "Residental Address",
-                      context:
-                        "Localized version of a placeholder Residental Address. For example, Max Mustermann in German or Jan Kowalski in Polish.",
-                    })}
+                    placeholder={"Residental Address"}
                     {...field}
                   />
                 </FormControl>
