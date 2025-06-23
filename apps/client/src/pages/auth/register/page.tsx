@@ -393,7 +393,7 @@ export const RegisterPage = () => {
             }} /><Button onClick={() => {
               setCurrentForm('otp');
             }} className="mt-4 w-full">
-              {t`Send`}
+              {`Send`}
             </Button></>)
         }
 
@@ -404,7 +404,7 @@ export const RegisterPage = () => {
               signUpFun();
             }}
             className="mt-4 w-full">
-            {t`Submit`}
+            {`Submit`}
           </Button></>
         }
       </div>

@@ -165,6 +165,28 @@ export class DoxboxService {
   }
 
 
+  async getAllUsers(): Promise<any> {
+    try {
+      const response = await axios.post(
+        `${this.configService.get("DOXBOXURL")}/get-all-user`,
+        {
+          cyp_cred: this.configService.get("DOXBOXURL_CRED"),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          maxBodyLength: Infinity,
+        }
+      );
+
+      return response.data?.data??[];
+    } catch (error) {
+      console.error('Error fetching users:', error.message);
+      throw error;
+    }
+  }
+
   async getCountryList(): Promise<any> {
     const config = {
       method: 'get',

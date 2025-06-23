@@ -432,9 +432,52 @@ export class AuthService {
         picture:body.picture
       }
       
-      const userId = body.user_id;
+      const userId = body.user_id?.toString();
       await this.userService.addUpdateUserFromDoxbox(objReq, userId);
 
+    } catch (error) {
+      Logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async migrateUserFromDoxbox(body: any) {
+    try {
+
+
+      const userList = await this.doxboxService.getAllUsers();
+
+      userList?.forEach(async (body:any) => {
+        
+        try {
+          const objReq = {
+            "fname": body.first_name,
+            "mname": body?.middle_name ?? "",
+            "lname": body?.last_name ?? "",
+            "gender": body?.gender ?? "",
+            "dob": body?.dob ?? "",
+            "nationality": body?.nationality ?? "",
+            "countryresidence": body?.countryresidence ?? "",
+            "cityresidence": body?.address ?? "",
+            "residentaladdress": body?.residence_address ?? "",
+            "email": body.email,
+            "locale": "en-US",
+            "countryCode": body?.country_code ?? "",
+            "mobile": body?.mobile ?? "",
+            username: processUsername(body.email.split("@")[0]),//registerDto.email, //registerDto.username,
+            globalUserId: body.id?.toString(),
+            provider: Provider.email,
+            // emailVerified: false,
+            picture:body.img_full_url
+          }
+          
+          const userId = body.id?.toString();
+          await this.userService.addUpdateUserFromDoxbox(objReq, userId);
+        } catch (error) {
+            console.log("error",error)
+        }
+      });
+    
     } catch (error) {
       Logger.error(error);
       throw new InternalServerErrorException(error);

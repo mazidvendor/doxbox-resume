@@ -345,4 +345,15 @@ export class AuthController {
       message: "add/updated successfully.",
     };
   }
+
+  @ApiTags("Add or Update user")
+  @Post("migrate-user")
+  async migrateUserFromDoxbox(
+    @Body() body:any
+  ) {
+    await this.authService.migrateUserFromDoxbox(body);
+    return {
+      message: "add/updated successfully.",
+    };
+  }
 }
