@@ -153,7 +153,8 @@ export class AuthService {
       Logger.log("user loggedin from dox box ",doxboxuser?.data?.id);
       Logger.log("now calling prism funtion with identifier",identifier);
       const user = await this.userService.findOneByIdentifierOrThrow(identifier);
-      Logger.log("data get from prims funtion ",JSON.stringify(user));
+      Logger.log("data get from prims funtion user?.globalUserId",user?.globalUserId);
+      Logger.log("data get from prims funtion user?.globalUserId",doxboxuser?.data?.id);
 
       if (doxboxuser?.data?.id != user?.globalUserId) {
         throw new BadRequestException("User not exist in this tenant.");
@@ -163,9 +164,14 @@ export class AuthService {
       // }
 
       // await this.validatePassword(password, user.secrets.password);
+      Logger.log("after if condition ",user.email);
+
       await this.setLastSignedIn(user.email);
+      Logger.log("after setLastSignedIn ",user.email);
+
       return user;
-    } catch {
+    } catch (error){
+      Logger.log("error",error);
       throw new BadRequestException(ErrorMessage.InvalidCredentials);
     }
   }
