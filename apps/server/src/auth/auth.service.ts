@@ -166,7 +166,7 @@ export class AuthService {
       // await this.validatePassword(password, user.secrets.password);
       Logger.log("after if condition ",user.email);
 
-      // await this.setLastSignedIn(user.email);
+      await this.setLastSignedIn(user.email);
       Logger.log("after setLastSignedIn ",user.email);
 
       return user;
