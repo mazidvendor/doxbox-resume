@@ -29,6 +29,7 @@ jobs:
             }
 
             git pull origin master
+            export SMTP_URL=${{ secrets.SMTP_URL }}
             docker-compose down
             docker-compose build
             docker-compose up -d

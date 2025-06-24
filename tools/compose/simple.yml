@@ -73,7 +73,6 @@ services:
       REFRESH_TOKEN_SECRET: 3e31ef1f89bd350019b7731019242fd5
 
       MAIL_FROM: notify@doxboxapp.com
-      SMTP_URL: smtp://apikey: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@smtp.sendgrid.net:587
 
       DOXBOXURL : https://admin.doxboxapp.com/api
       DOXBOXURL_CRED : MpQNquyYXmAJQu7vqzEx4k9H
