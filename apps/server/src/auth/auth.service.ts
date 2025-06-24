@@ -145,13 +145,17 @@ export class AuthService {
 
   async authenticate({ identifier, password }: LoginDto) {
     try {
+      Logger.log("Inside authenticate funtion");
       const doxboxuser = await this.doxboxService.loginUser(identifier, password);
       if (!doxboxuser?.data?.id) {
         throw new BadRequestException(doxboxuser?.message);
       }
+      Logger.log("user loggedin from dox box ",doxboxuser?.data?.id);
+      Logger.log("now calling prism funtion with identifier",identifier);
       const user = await this.userService.findOneByIdentifierOrThrow(identifier);
+      Logger.log("data get from prims funtion ",JSON.stringify(user));
 
-      if (doxboxuser.data.id != user.globalUserId) {
+      if (doxboxuser?.data?.id != user?.globalUserId) {
         throw new BadRequestException("User not exist in this tenant.");
       }
       // if (!user.secrets?.password) {

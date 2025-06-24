@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
 import { UserWithSecrets } from "@reactive-resume/dto";
 import { ErrorMessage } from "@reactive-resume/utils";
@@ -58,6 +58,7 @@ export class UserService {
         include: { secrets: true },
       });
 
+      Logger.log("findOneByIdentifierOrThrow",JSON.stringify(user))
       // If the user exists, return it
       if (user) return user;
 
