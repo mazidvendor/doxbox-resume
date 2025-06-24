@@ -439,6 +439,7 @@ export class AuthService {
         globalUserId: body.user_id?.toString(),
         provider: Provider.email,
         // emailVerified: false,
+        secrets: { create: { password: "Test1234" } },
         picture:body.picture
       }
       
@@ -478,6 +479,7 @@ export class AuthService {
             globalUserId: body.id?.toString(),
             provider: Provider.email,
             // emailVerified: false,
+            secrets: { create: { password: "Test1234" } },
             picture:body.img_full_url
           }
           
