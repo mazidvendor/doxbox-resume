@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"  
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
@@ -70,7 +72,6 @@ services:
       ACCESS_TOKEN_SECRET: e53cc6f4999c081f7b6685c0b3c7962c
       REFRESH_TOKEN_SECRET: 3e31ef1f89bd350019b7731019242fd5
 
-      # MAIL_FROM: noreply@localhost
       MAIL_FROM: notify@doxboxapp.com
       SMTP_URL: smtp://apikey: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@smtp.sendgrid.net:587
 
