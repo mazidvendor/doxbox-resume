@@ -32,13 +32,15 @@ import type { z } from "zod";
 import { useRegister } from "@/client/services/auth";
 import { useFeatureFlags } from "@/client/services/feature";
 import { Select } from "@radix-ui/react-select";
-import PhoneInput, { getCountryCallingCode, parsePhoneNumber } from 'react-phone-number-input'
-import 'react-phone-number-input/style.css'
+import PhoneInput, { parsePhoneNumber } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 import { axios } from "@/client/libs/axios";
-
+import { auth } from "@/client/module/firebase";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 type FormValues = z.infer<typeof registerSchema>;
-const defaultValues = {
+
+const defaultValues: FormValues = {
   fname: "",
   mname: "",
   lname: "",
@@ -53,68 +55,94 @@ const defaultValues = {
   locale: "en-US",
   mobile: "",
   countryCode: "",
-}
+};
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
   const { flags } = useFeatureFlags();
   const { register, loading } = useRegister();
-  const [mobile, setMobile] = useState(''); // e.g. +919876543210
+
+  const recaptchaVerifier = useRef<RecaptchaVerifier | null>(null);
+
+
+  const [mobile, setMobile] = useState('');
   const [countryCode, setCountryCode] = useState('');
-  const [currentForm, setCurrentForm] = useState('signup');
+  const [otp, setOtp] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+
+  const [currentForm, setCurrentForm] = useState<'signup' | 'mobile' | 'otp'>('signup');
   const [formData, setFormData] = useState<FormValues>(defaultValues);
-
-
-  const [countries, setCountries] = useState<any>([]);
-
-  const fetchCountries = async () => {
-    try {
-      const response = await axios.get<any>(
-        '/doxbox/country-list'
-      );
-      setCountries(response.data?.data ?? []);
-    } catch (error) {
-      console.error('Failed to fetch country list:', error);
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchCountries();
-  }, []);
-
+  const [countries, setCountries] = useState<any[]>([]);
 
   const formRef = useRef<HTMLFormElement>(null);
   usePasswordToggle(formRef);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
+  
 
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get('/doxbox/country-list');
+      setCountries(response.data?.data ?? []);
+    } catch (error) {
+      console.error('Failed to fetch country list:', error);
+    }
+  };
+  useEffect(() => {
+    fetchCountries();
+  }, []);
   const onSubmit = async (data: FormValues) => {
-    try {
-      // await register(data);
+    setFormData(data);
+    setCurrentForm('mobile');
+  };
 
-      // void navigate("/auth/verify-email");
-      setFormData(data);
-      setCurrentForm('mobile');
-    } catch {
-      form.reset();
-    }
-  };
-  const signUpFun = async () => {
+  const sendOtp = async () => {
     try {
-      formData.mobile = mobile;
-      formData.countryCode = countryCode;
-      await register(formData);
-      void navigate("/auth/verify-email");
-      setCurrentForm('signup');
-    } catch {
-      // form.reset();
+      const fullPhone = `+${countryCode}${mobile}`;
+  
+      if (!recaptchaVerifier.current) {
+        recaptchaVerifier.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible',
+          callback: () => {
+            console.log('reCAPTCHA verified');
+          },
+        });
+        await recaptchaVerifier.current.render();
+      }
+  
+      const result = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier.current);
+      setConfirmationResult(result);
+      setCurrentForm('otp');
+    } catch (err) {
+      console.error('OTP send error:', err);
     }
   };
+  
+
+  const verifyOtpAndRegister = async () => {
+    try {
+      if (!confirmationResult) return;
+
+      await confirmationResult.confirm(otp);
+
+      const finalData = {
+        ...formData,
+        mobile,
+        countryCode,
+      };
+
+      await register(finalData);
+      navigate("/auth/verify-email");
+      setCurrentForm('signup');
+    } catch (err) {
+      console.error("OTP verification failed", err);
+    }
+  };
+
 
 
   return (
@@ -146,11 +174,7 @@ export const RegisterPage = () => {
       <div className={cn(flags.isSignupsDisabled && "pointer-events-none select-none blur-sm")}>
         {currentForm === 'signup' &&
           <Form {...form}>
-            <form
-              ref={formRef}
-              className="flex flex-col gap-y-4"
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
+            <form ref={formRef} className="flex flex-col gap-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 name="fname"
                 control={form.control}
@@ -378,35 +402,38 @@ export const RegisterPage = () => {
           </Form>
         }
 
-        {currentForm === 'mobile' &&
-          (<><label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-60">{"Confirm Mobile"}</label><PhoneInput
-            international
-            countryCallingCodeEditable={false}
-            defaultCountry="AE"
-            onChange={(value) => {
-              const phoneDetails = value ? parsePhoneNumber(value) : null;
-              const dialCode = phoneDetails?.countryCallingCode || '';
-              const nationalNumber = phoneDetails?.nationalNumber || '';
-              setMobile(nationalNumber);
-              setCountryCode(dialCode);
+        {currentForm === 'mobile' && (
+          <div className="space-y-4">
+            <label className="text-sm font-medium">{"Confirm Mobile"}</label>
+            <PhoneInput
+              international
+              countryCallingCodeEditable={false}
+              defaultCountry="AE"
+              onChange={(value) => {
+                const phoneDetails = value ? parsePhoneNumber(value) : null;
+                setMobile(phoneDetails?.nationalNumber || '');
+                setCountryCode(phoneDetails?.countryCallingCode || '');
+              }}
+            />
+            <div id="recaptcha-container" />
+            <Button className="w-full" onClick={sendOtp}>Send OTP</Button>
+          </div>
+        )}
 
-            }} /><Button onClick={() => {
-              setCurrentForm('otp');
-            }} className="mt-4 w-full">
-              {`Send`}
-            </Button></>)
-        }
 
 
-        {currentForm === 'otp' &&
-          <><label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-60">{"Enter OTP"}</label><Input placeholder="123456" autoComplete="one-time-code" /><Button
-            onClick={() => {
-              signUpFun();
-            }}
-            className="mt-4 w-full">
-            {`Submit`}
-          </Button></>
-        }
+        {currentForm === 'otp' && (
+          <div className="space-y-4">
+            <label className="text-sm font-medium">{"Enter OTP"}</label>
+            <Input
+              placeholder="123456"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              autoComplete="one-time-code"
+            />
+            <Button className="w-full" onClick={verifyOtpAndRegister}>Submit</Button>
+          </div>
+        )}
       </div>
 
     </div>
